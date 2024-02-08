@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Ensure you have a CSS file at this path -->
+</head>
+<body>
+<div class="dashboard-container">
+    <h1>Welcome to the Dashboard</h1>
+    <h2>Available Rooms:</h2>
+    <ul>
+        <% rooms.forEach(room => { %>
+            <li><%= room %></li>
+        <% }); %>
+    </ul>
+
+    <h2>Join a Room:</h2>
+    <form action="/join-room" method="POST">
+        <select name="room">
+            <% rooms.forEach(room => { %>
+                <option value="<%= room %>"><%= room %></option>
+            <% }); %>
+        </select>
+        <button type="submit">Join Room</button>
+    </form>
+    <!-- Logout button -->
+    <form action="/logout" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</div>
+</body>
+</html>

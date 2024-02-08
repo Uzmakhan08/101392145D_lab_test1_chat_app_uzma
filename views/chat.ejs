@@ -1,0 +1,78 @@
+<!-- chat.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <!-- Include any necessary CSS stylesheets -->
+</head>
+<body>
+<div id="messages">
+    <!-- Messages will be displayed here -->
+</div>
+<form id="messageForm">
+    <input type="text" id="messageInput" autocomplete="off" placeholder="Type your message...">
+    <button type="submit">Send</button>
+</form>
+
+<!-- Include Socket.IO library -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    // Connect to the WebSocket server
+    const socket = io();
+
+    // Handle incoming messages
+    socket.on('message', (message) => {
+        const messagesDiv = document.getElementById('messages');
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messagesDiv.appendChild(messageElement);
+    });
+
+    // Handle form submission to send messages
+    const messageForm = document.getElementById('messageForm');
+    messageForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        if (message) {
+            socket.emit('chatMessage', message);
+            messageInput.value = '';
+        }
+    });
+
+    // Detect when user is typing
+    let typing = false;
+    const messageInput = document.getElementById('messageInput');
+    messageInput.addEventListener('input', () => {
+        if (!typing) {
+            typing = true;
+            socket.emit('typing', true);
+        }
+        // Reset typing status after a delay (e.g., 1 second)
+        setTimeout(() => {
+            typing = false;
+            socket.emit('typing', false);
+        }, 1000);
+    });
+
+    // Handle "User is typing..." messages from the server
+    socket.on('typing', (isTyping) => {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (isTyping) {
+            typingIndicator.textContent = 'User is typing...';
+        } else {
+            typingIndicator.textContent = '';
+        }
+    });
+    // Add event listener to a "Logout" button
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        // Redirect to logout route (handled by the server)
+        window.location.href = '/logout';
+    });
+
+</script>
+</body>
+</html>
